@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ejercicio de interes </title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <h1>Ejercicio 2</h1>
+    <div class="container">
+        <fieldset>
+            <legend>Enunciado del Ejercicio</legend>
+            <p>
+                Determinar en un tiempo dado el interés para un depósito de dinero (capital) y realizar el pago de interés dependiendo del monto:<br>
+                - Si K &lt;= 10,000, la tasa de interés es 0.035<br>
+                - Si 10,000 &lt; K &lt;= 100,000, la tasa de interés es 0.040<br>
+                - Si K &gt; 100,000, la tasa de interés es 0.050
+            </p>
+        </fieldset>
+        <div class="controls">
+            <label for="capital">Monto (Capital):</label>
+            <input type="number" id="capital" min="0">
+            <label for="time">Tiempo (en años):</label>
+            <input type="number" id="time" min="1">
+            <button onclick="calculateInterest()">Calcular Interés</button>
+        </div>
+        <div id="results" class="results" style="display: none;">
+            <p><strong>Interés:</strong> <span id="interest"></span> Bs.</p>
+            <p><strong>Monto total después de interés:</strong> <span id="totalAmount"></span> Bs.</p>
+        </div>
+    </div>
+
+    <script>
+        function calculateInterest() {
+            const capital = parseFloat(document.getElementById('capital').value);
+            const time = parseInt(document.getElementById('time').value);
+            let rate;
+
+            if (capital <= 10000) {
+                rate = 0.035;
+            } else if (capital <= 100000) {
+                rate = 0.040;
+            } else {
+                rate = 0.050;
+            }
+
+            const interest = capital * rate * time;
+            const totalAmount = capital + interest;
+
+            document.getElementById('interest').textContent = interest.toFixed(2);
+            document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+            document.getElementById('results').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
