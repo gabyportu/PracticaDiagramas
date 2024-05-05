@@ -1,185 +1,181 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Agencia de Azúcar</title>
+    <title>Simulación de Tienda de Azúcar</title>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    <h1>Agencia de Azúcar</h1>
+    <h1>Simulación de Tienda de Azúcar</h1>
     <div class="container">
-        <div class="__input--grid">
-            <label for="totalSimulations">Cantidad de simulaciones</label>
-            <input type="number" id="totalSimulations" required><br>
+        <label for="simulationDays">Número de simulaciones:</label>
+        <input type="number" id="simulationDays" min="1" value="60">
+        <button onclick="simulateStore()">Simular Tienda</button>
+        <button type="button" onclick="goBackToMenu()">Volver al menú</button>
+        
+        <table id="resultsTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Día</th>
+                    <th>Inventario Inicial</th>
+                    <th>Demanda</th>
+                    <th>Inventario Final</th>
+                    <th>Demanda Insatisfecha</th>
+                    <th>Costo de Ordenar</th>
+                    <th>Costo de Inventario</th>
+                    <th>Ganancia Neta</th>
+                </tr>
+            </thead>
+            <tbody id="resultsBody">
+            </tbody>
+        </table>
 
-            <label for="totalDays">Cantidad de Días</label>
-            <input type="number" id="totalDays" required><br>
-
-            <label for="orderCost">Costo de ordenar</label>
-            <input type="number" id="orderCost" required><br>
-
-            <label for="inventory">Costo de llevar el inventario</label>
-            <input type="number" id="inventory" required><br>
-
-            <label for="acquisition">Costo de adquisición</label>
-            <input type="number" id="acquisition" required><br>
-
-            <label for="store">Capacidad de Bodega</label>
-            <input type="number" id="store" required><br>
-
-            <label for="sellPrice">Precio de venta</label>
-            <input type="number" id="sellPrice" required><br>
-
-            <button type="button" onclick="calculateSugar()">Calcular</button>
-            <button type="button" onclick="goBackToMenu()">Volver al menú</button>
+        <div id="summary" style="display: none;">
+            <h2>Resultados Finales</h2>
+            <p><strong>Ganancia Neta Promedio:</strong> <span id="averageNetGain"></span></p>
+            <p><strong>Demanda Insatisfecha Promedio:</strong> <span id="averageUnmetDemand"></span></p>
+            <p><strong>Capacidad Óptima del Inventario:</strong> <span id="optimalCapacity"></span></p>
         </div>
-
-        <div id="table-container"></div>
     </div>
 
     <script>
-        // Simula el valor de rango entre 0 y 1 (reemplaza esta función con tu implementación real)
-        const randomNumberGenerator = () => Math.random();
-
-        let messagesMatrix = [];
-
-        const calculateSugar = () => {
-            const totalSimulations = parseInt(document.getElementById("totalSimulations").value);
-            const totalDays = parseInt(document.getElementById("totalDays").value);
-            const orderCost = parseFloat(document.getElementById("orderCost").value);
-            const inventory = parseFloat(document.getElementById("inventory").value);
-            const acquisition = parseFloat(document.getElementById("acquisition").value);
-            const store = parseInt(document.getElementById("store").value);
-            const sellPrice = parseFloat(document.getElementById("sellPrice").value);
-
-            const tableContainer = document.getElementById("table-container");
-            const titles = [
-                "Día",
-                "Demanda Azúcar",
-                "Inventario Azúcar",
-                "Costo Total Mantenimiento",
-                "Ingreso Bruto",
-            ];
-
-            let matrix = sugarCalculus(totalSimulations, totalDays, orderCost, inventory, acquisition, sellPrice, store);
-
-            // Lógica para mostrar los resultados en la tabla
-            let table = "<table border='1'>";
-            table += "<tr>";
-            titles.forEach(title => {
-                table += `<th>${title}</th>`;
-            });
-            table += "</tr>";
-
-            for (let i = 0; i < matrix.length; i++) {
-                table += "<tr>";
-                for (let j = 0; j < matrix[i].length; j++) {
-                    table += `<td>${matrix[i][j]}</td>`;
-                }
-                for (let j = 0; j < messagesMatrix[i].length; j++) {
-                    table += `<td>${messagesMatrix[i][j]}</td>`;
-                }
-                table += "</tr>";
-            }
-
-            table += "</table>";
-
-            tableContainer.innerHTML = table;
-        }
 
         const goBackToMenu = () => {
-            // Implementa la navegación a la página de menú aquí
+            window.location.href = "index.html";
         }
+        function simulateStore() {
+            const simulationDays = parseInt(document.getElementById("simulationDays").value);
+            const resultsBody = document.getElementById("resultsBody");
+            const summary = document.getElementById("summary");
+            resultsBody.innerHTML = '';
 
-        const sugarCalculus = (totalSimulations, totalDays, orderCost, inventory, acquisition, sellPrice, store) => {
-            let matrix = [];
-            let costoTotalDias = 0;
-            let gananciaNetaDias = 0;
-            let demandaInsatisfechaDias = 0;
-            messagesMatrix = [];
+            const capacity = 700;
+            let currentInventory = capacity;
+            let deliveryTime = 0;
+            let results = [];
+            let totalNetGain = 0;
+            let totalUnmetDemand = 0;
 
-            for (let i = 0; i < totalSimulations; i++) {
-                let messagesRow = [];
-                let rowMatrix = [];
-                let totalCost = 0;
-                let gananciaNeta = 0;
-                let invAzu = store;
-                let costoTotalAdq = 0;
-                let costoTotalReorden = 0;
-                let costoTotalMantenimiento = 0;
-                let tent = 0;
-                let pAzu = 0;
-                let dAzu = 0;
-                let ingresoBruto = 0;
-                let demandaInsatisfecha = 0;
+            for (let day = 1; day <= simulationDays; day++) {
+                // Generar una demanda en un rango más alto (100-200 kg)
+                const demand = Math.round(Math.random() * 100) + 100;
+                const initialInventory = currentInventory;
+                let unmetDemand = 0;
+                let orderingCost = 0;
+                const inventoryCost = Math.round(currentInventory * 0.1);
+                let netGain = 0;
 
-                // Lógica de cálculo de cada simulación
-                for (let j = 0; j < totalDays; j++) {
-                    // Lógica de cálculo para cada día
-                    row = [];
-                    row.push(j + 1);
-                    if ((j + 1) % 7 === 0) {
-                        pAzu = store - invAzu;
-                        costoTotalAdq += pAzu * acquisition;
-                        costoTotalReorden += parseInt(orderCost);
-                        let rTent = randomNumberGenerator();
-                        tent = Math.round(1 + 2 * rTent);
-                        if (invAzu > 0) {
-                            costoTotalMantenimiento += sellPrice * invAzu;
-                        }
-                    } else {
-                        if (tent !== 0) {
-                            tent--;
-                            if (tent === 0) {
-                                invAzu += pAzu;
-                            }
-                        }
+                if (day % 7 === 0 || currentInventory === 0) {
+                    orderingCost = 100;
+                    deliveryTime = Math.floor(Math.random() * 3) + 1;
+                }
 
-                        let rAzu = randomNumberGenerator();
-                        rAzu = rAzu === 1 ? 0.999999 : rAzu;
-                        dAzu = Math.round(-100 * Math.log(1 - rAzu));
-
-                        if (invAzu >= dAzu) {
-                            invAzu -= dAzu;
-                            costoTotalMantenimiento += invAzu * inventory;
-                            ingresoBruto += dAzu * sellPrice;
-                        } else {
-                            demandaInsatisfecha += dAzu - invAzu;
-                            ingresoBruto += invAzu * sellPrice;
-                            invAzu = 0;
-                        }
-
-                        row.push(dAzu);
-                        row.push(invAzu);
-                        row.push(costoTotalMantenimiento);
-                        row.push(ingresoBruto);
-
-                        rowMatrix.push(row);
+                if (deliveryTime > 0) {
+                    deliveryTime--;
+                    if (deliveryTime === 0) {
+                        currentInventory = capacity - currentInventory;
                     }
                 }
 
-                // Cálculos finales para la simulación actual
+                if (demand > currentInventory) {
+                    unmetDemand = demand - currentInventory;
+                    currentInventory = 0;
+                } else {
+                    currentInventory -= demand;
+                }
 
-                matrix.push(rowMatrix);
-                totalCost = costoTotalMantenimiento + costoTotalAdq + costoTotalReorden;
-                gananciaNeta = ingresoBruto - totalCost;
+                // Calcular ingresos y costos totales
+                const salesRevenue = (demand - unmetDemand) * 5;
+                const acquisitionCost = demand * 3.5;
+                const totalCost = orderingCost + inventoryCost + acquisitionCost;
+                const totalRevenue = salesRevenue - totalCost;
 
-                messagesRow.push("Costo Total " + Number(totalCost).toFixed(3));
-                messagesRow.push("Ganancia neta " + Number(gananciaNeta).toFixed(3));
-                messagesRow.push("Demanda Insatisfecha " + demandaInsatisfecha);
+                // Asegurarse de que la ganancia neta sea positiva
+                netGain = totalRevenue > 0 ? totalRevenue : 0;
 
-                costoTotalDias += totalCost;
-                gananciaNetaDias += gananciaNeta;
-                demandaInsatisfechaDias += demandaInsatisfecha;
+                totalNetGain += netGain;
+                totalUnmetDemand += unmetDemand;
 
-                messagesMatrix.push(messagesRow);
+                results.push({
+                    day,
+                    initialInventory,
+                    demand,
+                    finalInventory: currentInventory,
+                    unmetDemand,
+                    orderingCost,
+                    inventoryCost,
+                    netGain
+                });
             }
 
-            alert("Costo Total promedio " + Number(costoTotalDias / totalSimulations).toFixed(3));
-            alert("Ganancia neta " + Number(gananciaNetaDias / totalSimulations).toFixed(3));
-            alert("Demanda Insatisfecha " + (demandaInsatisfechaDias / totalSimulations).toFixed(3));
+            results.forEach(result => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${result.day}</td>
+                    <td>${result.initialInventory}</td>
+                    <td>${result.demand}</td>
+                    <td>${result.finalInventory}</td>
+                    <td>${result.unmetDemand}</td>
+                    <td>${result.orderingCost}</td>
+                    <td>${result.inventoryCost}</td>
+                    <td>${result.netGain}</td>
+                `;
+                resultsBody.appendChild(row);
+            });
 
-            return matrix;
+            const resultsTable = document.getElementById("resultsTable");
+            resultsTable.style.display = "block";
+
+            const averageNetGain = totalNetGain / simulationDays;
+            const averageUnmetDemand = totalUnmetDemand / simulationDays;
+
+            document.getElementById("averageNetGain").textContent = averageNetGain.toFixed(2);
+            document.getElementById("averageUnmetDemand").textContent = averageUnmetDemand.toFixed(2);
+
+            const optimalCapacity = calculateOptimalCapacity(results);
+            document.getElementById("optimalCapacity").textContent = optimalCapacity;
+
+            summary.style.display = "block";
+        }
+
+        function calculateOptimalCapacity(results) {
+            let maxNetGain = -Infinity;
+            let optimalCapacity = 0;
+
+            for (let capacity = 700; capacity <= 1000; capacity++) {
+                let totalNetGain = 0;
+
+                results.forEach(result => {
+                    let currentInventory = capacity;
+                    let netGain = 0;
+
+                    const salesRevenue = (result.demand - result.unmetDemand) * 5;
+                    const acquisitionCost = result.demand * 3.5;
+                    const orderingCost = result.orderingCost;
+                    const inventoryCost = Math.round(currentInventory * 0.1);
+                    const totalCost = orderingCost + inventoryCost + acquisitionCost;
+                    const totalRevenue = salesRevenue - totalCost;
+
+                    netGain = totalRevenue > 0 ? totalRevenue : 0;
+                    totalNetGain += netGain;
+                });
+
+                if (totalNetGain > maxNetGain) {
+                    maxNetGain = totalNetGain;
+                    optimalCapacity = capacity;
+                }
+            }
+
+            return optimalCapacity;
         }
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+

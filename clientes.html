@@ -33,6 +33,7 @@
             <label for="sellingPrice">Precio de venta del artículo:</label>
             <input type="number" id="sellingPrice" min="1" value="75">
             <button onclick="simulateStore()">Simular Tienda</button>
+            <button type="button" onclick="goBackToMenu()">Volver al menú</button>
         </div>
     </div>
     <div class="fieldset results-container" id="results-container" style="display: none;">
@@ -52,6 +53,11 @@
         </table>
     </div>
     <script>
+        
+        const goBackToMenu = () => {
+            window.location.href = "index.html";
+        }
+
         function simulateStore() {
             const resultsContainer = document.getElementById('results-container');
             resultsContainer.style.display = 'none';

@@ -28,6 +28,8 @@
     </div>
 
     <script>
+
+
         function randomNumberGenerator() {
             let seed = 0;
             let k = 3;
@@ -40,6 +42,7 @@
             }
             return ((a * seed) % m) / (m - 1);
         }
+
 
         const calculateDice = () => {
             const totalSimulations = parseFloat(document.getElementById("totalSimulations").value);
@@ -143,7 +146,7 @@
         }
 
         const goBackToMenu = () => {
-            // Implementa la navegación a la página de menú aquí
+            window.location.href = "index.html";
         }
     </script>
 </body>

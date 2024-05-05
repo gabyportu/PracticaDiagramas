@@ -23,6 +23,8 @@
             <label for="loseAmount">Dinero pagado al perder (Y Bs):</label>
             <input type="number" id="loseAmount" min="0" value="3">
             <button onclick="simulateGame()">Simular Juego</button>
+            <button type="button" onclick="goBackToMenu()">Volver al menú</button>
+
         </div>
     </div>
     <fieldset id="resultsContainer" style="display: none;">
@@ -98,6 +100,11 @@
             const outcomes = ['Cara', 'Sello'];
             return Array(coinCount).fill(null).map(() => outcomes[Math.floor(Math.random() * 2)]);
         }
+
+        const goBackToMenu = () => {
+            window.location.href = "index.html";
+        }
+
     </script>
 </body>
 </html>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,158 +28,171 @@
             <button type="button" onclick="goBackToMenu()">Volver al menú</button>
         </div>
 
+
         <div id="table-container"></div>
     </div>
-</body>
-<script>
-    function randomNumberGenerator() {
-        let seed = 0;
-        let k = 3;
-        let g = Math.round(Math.log(100) / Math.log(2) + 2);
-        let m = Math.pow(2, g);
-        let a = 3 + 8 * parseInt(k);
 
-        while (seed % 2 === 0) {
-            seed = Math.round(Math.random() * 10000);
+    <script>
+        function randomNumberGenerator() {
+            let seed = 0;
+            let k = 3;
+            let g = Math.round(Math.log(100) / Math.log(2) + 2);
+            let m = Math.pow(2, g);
+            let a = 3 + 8 * parseInt(k);
+
+            while (seed % 2 === 0) {
+                seed = Math.round(Math.random() * 10000);
+            }
+            return ((a * seed) % m) / (m - 1);
         }
-        return ((a * seed) % m) / (m - 1);
-    }
 
-    const createTable = (titles, matrix, messagesMatrix) => {
-        let table = "<table border='1'>";
-        table += "<tr>";
-        titles.forEach(title => {
-            table += `<th>${title}</th>`;
-        });
-        table += "</tr>";
-
-        for (let i = 0; i < matrix.length; i++) {
+        const createTable = (titles, matrix, messagesMatrix) => {
+            let table = "<table border='1'>";
             table += "<tr>";
-            for (let j = 0; j < matrix[i].length; j++) {
-                table += `<td>${matrix[i][j]}</td>`;
-            }
-            for (let j = 0; j < messagesMatrix[i].length; j++) {
-                table += `<td>${messagesMatrix[i][j]}</td>`;
-            }
+            titles.forEach(title => {
+                table += `<th>${title}</th>`;
+            });
             table += "</tr>";
-        }
 
-        table += "</table>";
-        return table;
-    };
+            for (let i = 0; i < matrix.length; i++) {
+                table += "<tr>";
+                for (let j = 0; j < matrix[i].length; j++) {
+                    table += `<td>${matrix[i][j]}</td>`;
+                }
+                for (let j = 0; j < messagesMatrix[i].length; j++) {
+                    table += `<td>${messagesMatrix[i][j]}</td>`;
+                }
+                table += "</tr>";
+            }
 
-    const gallinaCalculus = (totalSimulations, days, chickenPrice, eggPrice) => {
-        let matrix = [];
-        messagesMatrix = [];
-        let ingresoBruto = 0;
-        let promedioDia = 0;
-        let cantidadPollosMuertos = 0;
-        let cantidadHuevosRotos = 0;
+            table += "</table>";
+            return table;
+        };
 
-        for (let i = 0; i < totalSimulations; i++) {
-            let simulationMatrix = [];
-            let messageRow = [];
+        const gallinaCalculus = (totalSimulations, days, chickenPrice, eggPrice) => {
+            let matrix = [];
+            messagesMatrix = [];
+            let ingresoBruto = 0;
+            let promedioDia = 0;
+            let cantidadPollosMuertos = 0;
+            let cantidadHuevosRotos = 0;
 
-            let eggSum = 0;
-            let aliveChickenSum = 0;
-            let totalDeathEgg = 0;
-            let totalBrokenEgg = 0;
-            let ib = 0;
+            for (let i = 0; i < totalSimulations; i++) {
+                let simulationMatrix = [];
+                let messageRow = [];
 
-            for (let j = 0; j < days; j++) {
-                let row = [];
-                row.push(j + 1);
-                let rEggNumber = randomNumberGenerator();
-                row.push(rEggNumber);
+                let eggSum = 0;
+                let aliveChickenSum = 0;
+                let totalDeathEgg = 0;
+                let totalBrokenEgg = 0;
+                let ib = 0;
 
-                let eggNumber = Math.round(2 * rEggNumber); // Usar la media de 2 huevos/día
-                row.push(eggNumber);
+                for (let j = 0; j < days; j++) {
+                    let row = [];
+                    row.push(j + 1);
+                    let rEggNumber = randomNumberGenerator();
+                    row.push(rEggNumber);
 
-                let rEggState = randomNumberGenerator();
+                    let eggNumber = Math.round(2 * rEggNumber); // Usar la media de 2 huevos/día
+                    row.push(eggNumber);
 
-                let brokenEgg = 0;
-                let deathEgg = 0;
-                let aliveEgg = 0;
-                let totalEgg = 0;
+                    let rEggState = randomNumberGenerator();
 
-                for (let h = 0; h < eggNumber; h++) {
-                    if (rEggState <= 0.2) {
-                        brokenEgg += 1;
-                    } else if (rEggState <= 0.5) {
-                        let rChickenState = randomNumberGenerator();
-                        if (rChickenState <= 0.2) {
-                            deathEgg += 1;
+                    let brokenEgg = 0;
+                    let deathEgg = 0;
+                    let aliveEgg = 0;
+                    let totalEgg = 0;
+
+                    for (let h = 0; h < eggNumber; h++) {
+                        if (rEggState <= 0.2) {
+                            brokenEgg += 1;
+                        } else if (rEggState <= 0.5) {
+                            let rChickenState = randomNumberGenerator();
+                            if (rChickenState <= 0.2) {
+                                deathEgg += 1;
+                            } else {
+                                aliveEgg += 1;
+                            }
                         } else {
-                            aliveEgg += 1;
+                            totalEgg += 1;
                         }
-                    } else {
-                        totalEgg += 1;
                     }
+
+                    row.push(brokenEgg);
+                    row.push(aliveEgg);
+                    row.push(deathEgg);
+                    row.push(totalEgg);
+
+                    eggSum += totalEgg;
+                    aliveChickenSum += aliveEgg;
+                    simulationMatrix.push(row);
+
+                    totalDeathEgg += deathEgg;
+                    totalBrokenEgg += brokenEgg;
                 }
 
-                row.push(brokenEgg);
-                row.push(aliveEgg);
-                row.push(deathEgg);
-                row.push(totalEgg);
+                ib = parseInt(eggSum * eggPrice) + parseInt(aliveChickenSum * chickenPrice);
 
-                eggSum += totalEgg;
-                aliveChickenSum += aliveEgg;
-                simulationMatrix.push(row);
+                messageRow.push("El ingreso bruto es igual a " + parseInt(ib) + " Bs");
+                messageRow.push("El ingreso promedio es igual a " + (parseInt(ib) / parseInt(days)).toFixed(3) + " Bs/día");
+                messageRow.push("La cantidad de pollos que muere es igual a " + totalDeathEgg);
+                messageRow.push("La cantidad de huevos rotos es igual a " + totalBrokenEgg);
 
-                totalDeathEgg += deathEgg;
-                totalBrokenEgg += brokenEgg;
+                messagesMatrix.push(messageRow);
+
+                ingresoBruto += ib;
+                promedioDia += parseInt(ib) / parseInt(days);
+                cantidadPollosMuertos += totalDeathEgg;
+                cantidadHuevosRotos += totalBrokenEgg;
+
+                matrix.push(simulationMatrix);
             }
 
-            ib = parseInt(eggSum * eggPrice) + parseInt(aliveChickenSum * chickenPrice);
+            const resultContainer = document.getElementById("table-container");
+            const titles = [
+                "Día",
+                "r Cantidad de huevos",
+                "Cantidad de huevos",
+                "Huevos rotos",
+                "Pollos vivos",
+                "Pollos muertos",
+                "Huevos",
+            ];
 
-            messageRow.push("El ingreso bruto es igual a " + parseInt(ib) + " Bs");
-            messageRow.push("El ingreso promedio es igual a " + (parseInt(ib) / parseInt(days)).toFixed(3) + " Bs/día");
-            messageRow.push("La cantidad de pollos que muere es igual a " + totalDeathEgg);
-            messageRow.push("La cantidad de huevos rotos es igual a " + totalBrokenEgg);
+            const resultTable = createTable(titles, matrix, messagesMatrix);
+            resultContainer.innerHTML = resultTable;
 
-            messagesMatrix.push(messageRow);
+            const avgIncome = ingresoBruto / totalSimulations;
+            const avgDailyIncome = promedioDia / totalSimulations;
+            const avgDeadChickens = cantidadPollosMuertos / totalSimulations;
+            const avgBrokenEggs = cantidadHuevosRotos / totalSimulations;
 
-            ingresoBruto += ib;
-            promedioDia += parseInt(ib) / parseInt(days);
-            cantidadPollosMuertos += totalDeathEgg;
-            cantidadHuevosRotos += totalBrokenEgg;
+            const avgIncomeMessage = "El ingreso bruto promedio es igual a " + avgIncome.toFixed(2) + " Bs";
+            const avgDailyIncomeMessage = "El ingreso promedio diario es igual a " + avgDailyIncome.toFixed(2) + " Bs/día";
+            const avgDeadChickensMessage = "La cantidad promedio de pollos muertos es igual a " + avgDeadChickens.toFixed(2);
+            const avgBrokenEggsMessage = "La cantidad promedio de huevos rotos es igual a " + avgBrokenEggs.toFixed(2);
 
-            matrix.push(simulationMatrix);
-        }
+            const avgIncomeNode = document.createElement("p");
+            avgIncomeNode.textContent = avgIncomeMessage;
+            resultContainer.appendChild(avgIncomeNode);
 
-        alert("El ingreso bruto es igual a " + (ingresoBruto / totalSimulations).toFixed(2) + " Bs");
-        alert("El ingreso promedio es igual a " + (promedioDia / totalSimulations).toFixed(2) + " Bs/día");
-        alert("La cantidad de pollos que muere es igual a " + (cantidadPollosMuertos / totalSimulations).toFixed(2));
-        alert("La cantidad de huevos rotos es igual a " + (cantidadHuevosRotos / totalSimulations).toFixed(2));
+            const avgDailyIncomeNode = document.createElement("p");
+            avgDailyIncomeNode.textContent = avgDailyIncomeMessage;
+            resultContainer.appendChild(avgDailyIncomeNode);
 
-        return matrix;
-    };
+            const avgDeadChickensNode = document.createElement("p");
+            avgDeadChickensNode.textContent = avgDeadChickensMessage;
+            resultContainer.appendChild(avgDeadChickensNode);
 
-    const calculateGallina = () => {
-        const totalSimulations = parseFloat(document.getElementById("totalSimulations").value);
-        const days = parseFloat(document.getElementById("days").value);
-        const chickenPrice = parseFloat(document.getElementById("chickenPrice").value);
-        const eggPrice = parseFloat(document.getElementById("eggPrice").value);
+            const avgBrokenEggsNode = document.createElement("p");
+            avgBrokenEggsNode.textContent = avgBrokenEggsMessage;
+            resultContainer.appendChild(avgBrokenEggsNode);
+        };
 
-        const tableContainer = document.getElementById("table-container");
-        const titles = [
-            "Día",
-            "r Cantidad de huevos",
-            "Cantidad de huevos",
-            "Huevos rotos",
-            "Pollos vivos",
-            "Pollos muertos",
-            "Huevos",
-        ];
-
-        let matrix = gallinaCalculus(totalSimulations, days, chickenPrice, eggPrice);
-
-        const resultTable = createTable(titles, matrix, messagesMatrix);
-        tableContainer.innerHTML = resultTable;
-    };
-
-    const goBackToMenu = () => {
-        // Implementa la navegación a la página de menú aquí
-    };
-</script>
+        const goBackToMenu = () => {
+            window.location.href = "index.html";
+        };
+    </script>
+</body>
 </html>
+
